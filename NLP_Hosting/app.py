@@ -1,5 +1,5 @@
-# from keras.preprocessing.text import Tokenizer
-# from keras.preprocessing.sequence import pad_sequences
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
 from spellchecker import SpellChecker
 import re
 import string
@@ -8,9 +8,6 @@ import numpy as np
 from flask import Flask, request, render_template
 
 app = Flask(__name__)
-
-tweet = "Kentucky tornadoes' death toll reaches 50"
-model = None
 
 @app.route('/')
 def my_form():
@@ -23,8 +20,10 @@ def my_form_post():
 
     #getting the tweet
     tweet = request.form["tweet"]
+    
     prediction = get_prediction(tweet)
-    return "The predicted probability of there being a disaster is: " + prediction[0][0]
+    
+    return "The predicted probability of there being a disaster is: " + str(prediction)
 
 
 def get_prediction(tweet):
@@ -43,8 +42,7 @@ def get_prediction(tweet):
     predict_me = to_predict(tweet_pad)
 
     #we only need to load in the model the first time
-    if model ==  None:
-        get_model()
+    model = get_model()
     
     prediction = model.predict(predict_me)
     return prediction[0][0]        
@@ -60,6 +58,7 @@ def to_predict(tweet_pad):
 
 def get_corpus():
     corpus = pickle.load(open("the_corpus.sav", 'rb'))
+    return corpus
 
 ###formatting methods###
 def tweet_as_list(tweet):
